@@ -148,22 +148,24 @@ padding: 5px;
 }
 .image-grid {
  display: grid;
- padding: 8px;
+ padding: 18px;
 
- grid-template-columns: repeat(auto-fill, minmax(105px, 1fr)); /* Responsivo dentro da folha */
- gap: 4px;
+ grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); /* Responsivo dentro da folha */
+ gap: 15px;
 }
 
 .image-item {
  position: relative;  /* Para o posicionamento absoluto do quadrado */
  text-align: center;
+
+ 
 }
 
 .image-item img {
- width: 70%;
- height: 65%;
+ width: 22vh;
+ height: auto;
  border: 1px solid #ddd; /* Pequena borda ao redor das imagens */
- padding: 2px;
+
  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1); /* Sombra leve nas imagens */
 }
 
@@ -180,6 +182,7 @@ padding: 5px;
  left: -3px;  /* Grudado na parte esquerda */
  width: 16px;   /* Tamanho do quadrado */
  height: 16px;
+ 
  border: 2px solid  black;
  background-color: rgb(255, 255, 255);  /* Cor do quadrado */
  z-index: 1;  /* Garantir que fique acima da imagem */
