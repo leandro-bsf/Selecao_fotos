@@ -161,12 +161,14 @@ padding: 5px;
  
 }
 
-.image-item img {
- width: 22vh;
- height: auto;
- border: 1px solid #ddd; /* Pequena borda ao redor das imagens */
 
- box-shadow: 0 0 5px rgba(0, 0, 0, 0.1); /* Sombra leve nas imagens */
+
+.image-item img {
+  width: 70%;
+  height: 65%;
+  border: 1px solid #ddd; /* Pequena borda ao redor das imagens */
+  padding: 2px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1); /* Sombra leve nas imagens */
 }
 
 .image-item p {
