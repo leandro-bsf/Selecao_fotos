@@ -93,3 +93,37 @@
   font-size: 18px;
   cursor: pointer;
 }
+
+
+.a4-page-cover {
+  width: 794px;
+  height: 1123px;
+  margin: 5px auto;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid #ccc;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  background-color: black;
+}
+
+/* imagem ocupa 100% da folha */
+.a4-page-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* texto sobre a imagem */
+.cover-overlay {
+  position: absolute;
+  bottom: 40px;
+  width: 100%;
+  text-align: center;
+  color: white;
+  font-family: 'Montserrat';
+}
+
+.cover-overlay h1 {
+  margin: 0;
+  font-size: 32px;
+}

@@ -6,45 +6,75 @@ import './App.css';
 function ImageUploader() {
   const [images, setImages] = useState([]);
   const [dadosAluno, setDadosAluno] = useState('');
+  const [coverImage, setCoverImage] = useState(null);
 
+  // Upload das imagens do grid
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
 
-    if (files.length === 0) return; // Se nenhum arquivo foi selecionado, não faz nada.
+    if (files.length === 0) return;
 
     const imageList = files.map((file) => ({
-      name: file.name, // Nome do arquivo
-      url: URL.createObjectURL(file), // URL da imagem
+      name: file.name,
+      url: URL.createObjectURL(file),
     }));
 
-    setImages(imageList); // Atualiza o estado com as imagens selecionadas.
+    setImages(imageList);
   };
 
-  const generatePDF = () => {
-    const pageContent = document.querySelector('.a4-page'); // Seleciona o conteúdo para o PDF
+  // Upload da capa
+  const handleCoverChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    setCoverImage({
+      name: file.name,
+      url: URL.createObjectURL(file),
+    });
+  };
+
+  // Geração do PDF
+  const generatePDF = async () => {
+    const pageContent = document.querySelector('.a4-page');
 
     if (!pageContent) {
-      console.error("Elemento '.a4-page' não encontrado no DOM!");
-      alert('Erro ao gerar o PDF: elemento não encontrado.');
+      alert('Erro ao gerar o PDF: conteúdo não encontrado.');
       return;
     }
 
-    const pdf = new jsPDF('portrait', 'px', 'a4'); // Cria o PDF no formato A4
+    const pdf = new jsPDF('portrait', 'px', 'a4');
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = pdf.internal.pageSize.getHeight();
 
-    html2canvas(pageContent, { scale: 2 })
-      .then((canvas) => {
-        const imgData = canvas.toDataURL('image/png');
-        const imgProps = pdf.getImageProperties(imgData);
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+    try {
+      // ✅ PAGINA 1 - CAPA
+      if (coverImage) {
+        const img = new Image();
+        img.src = coverImage.url;
 
-        pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-        pdf.save(`${dadosAluno || 'document'}.pdf`); // Usa o nome ou um padrão
-      })
-      .catch((error) => {
-        console.error('Erro ao gerar o PDF:', error);
-        alert('Erro ao gerar o PDF. Confira o console para mais detalhes.');
-      });
+        await new Promise((resolve) => {
+          img.onload = resolve;
+        });
+
+        pdf.addImage(img, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+        pdf.addPage();
+      }
+
+      // ✅ PAGINA 2 - GRID
+      const canvas = await html2canvas(pageContent, { scale: 2 });
+
+      const imgData = canvas.toDataURL('image/png');
+      const imgProps = pdf.getImageProperties(imgData);
+
+      const imgHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, imgHeight);
+
+      pdf.save(`${dadosAluno || 'document'}.pdf`);
+    } catch (error) {
+      console.error('Erro ao gerar o PDF:', error);
+      alert('Erro ao gerar o PDF.');
+    }
   };
 
   return (
@@ -60,6 +90,13 @@ function ImageUploader() {
           />
         </div>
 
+        {/* Upload da CAPA */}
+        <div className="Form">
+          <span>Imagem da Capa (Página 1)</span>
+          <input type="file" accept="image/*" onChange={handleCoverChange} />
+        </div>
+
+        {/* Upload das fotos */}
         <div className="Form">
           <br />
           <span>Escolha até 30 fotos.</span>
@@ -68,7 +105,16 @@ function ImageUploader() {
           <button onClick={generatePDF}>Gerar PDF</button>
         </div>
       </div>
+      {coverImage && (
+  <div className="a4-page-cover">
+    <img src={coverImage.url} alt="Capa" />
 
+    <div className="cover-overlay">
+      <h1>{dadosAluno}</h1>
+    </div>
+  </div>
+)}
+      {/* Página do GRID */}
       <div className="a4-page">
         <div className="grid_titulo">
           <span>{dadosAluno}</span>
@@ -79,8 +125,8 @@ function ImageUploader() {
           <div className="image-grid">
             {images.map((image, index) => (
               <div key={index} className="image-item">
-                <p>{image.name}</p> {/* Nome do arquivo */}
-                <div className="small-square"></div> {/* Quadrado pequeno */}
+                <p>{image.name}</p>
+                <div className="small-square"></div>
                 <img src={image.url} alt={image.name} />
               </div>
             ))}
